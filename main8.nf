@@ -43,7 +43,7 @@ include './rnaseq-analysis' params(params)
 
 
 workflow {
-    'rnaseq-analysis'( 
+    rnaseq_analysis ( 
         params.transcriptome, 
         Channel .fromFilePairs( params.reads, checkExists: true )  )
 }

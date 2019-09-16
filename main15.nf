@@ -27,8 +27,7 @@ nextflow.preview.dsl=2
  */
 
 params.reads = "$baseDir/data/ggal/ggal_gut_{1,2}.fq"
-params.transcript1 = "$baseDir/data/ggal/transcriptome_1.fa"
-params.transcript2 = "$baseDir/data/ggal/transcriptome_2.fa"
+params.transcripts = "$baseDir/data/ggal/transcriptome_*.fa"
 params.outdir = "results"
 params.multiqc = "$baseDir/multiqc"
 
@@ -41,21 +40,16 @@ log.info """\
  outdir       : ${params.outdir}
  """
 
-include './rnaseq-analysis' params(params)
-
+include './rnaseq-analysis-2' params(params)
+include './fun-library'
 
 workflow {
-    reads = Channel .fromFilePairs( 'data/ggal/ggal_*_{1,2}.fq' ) 
-    transcripts  = Channel.fromPath('data/ggal/transcriptome_*.fa')
-    transcripts
-        .combine( reads )
-        .fork { tuple -> 
-           trascript: tuple[0]
-           reads: [ tuple[1], tuple[2] ]
-         }
-         .set { fork_out }
-         
-     rnaseq_analysis(fork_out)
+	main:
+	getInputForRnaseq(params.transcripts, params.reads) | rnaseq_analysis
+	publish:
+	rnaseq_analysis.out.fastqc to: 'results/fastqc_files'
+	rnaseq_analysis.out.quant to: 'results/quant_files'
+	rnaseq_analysis.out.multiqc to: 'results/multiqc_report'
 }
 
 workflow.onComplete {

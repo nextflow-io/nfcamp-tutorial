@@ -27,8 +27,7 @@ nextflow.preview.dsl=2
  */
 
 params.reads = "$baseDir/data/ggal/ggal_gut_{1,2}.fq"
-params.transcript1 = "$baseDir/data/ggal/transcriptome_1.fa"
-params.transcript2 = "$baseDir/data/ggal/transcriptome_2.fa"
+params.transcripts = "$baseDir/data/ggal/transcriptome_*.fa"
 params.outdir = "results"
 params.multiqc = "$baseDir/multiqc"
 
@@ -44,18 +43,22 @@ log.info """\
 include './rnaseq-analysis' params(params)
 
 
+def getInputForRnaseq( transcriptsPath, readsPath ) {
+
+    def separateTranscriptFromReads = forkCriteria({ tuple -> 
+        trascript: tuple[0]
+        reads: [ tuple[1], tuple[2] ]
+        })
+
+    def reads = Channel.fromFilePairs(readsPath) 
+    Channel.fromPath(transcriptsPath) \
+        | combine( reads ) \
+        | fork(separateTranscriptFromReads) 
+
+}
+
 workflow {
-    reads = Channel .fromFilePairs( 'data/ggal/ggal_*_{1,2}.fq' ) 
-    transcripts  = Channel.fromPath('data/ggal/transcriptome_*.fa')
-    transcripts
-        .combine( reads )
-        .fork { tuple -> 
-           trascript: tuple[0]
-           reads: [ tuple[1], tuple[2] ]
-         }
-         .set { fork_out }
-         
-     rnaseq_analysis(fork_out)
+    getInputForRnaseq(params.transcripts, params.reads) | rnaseq_analysis
 }
 
 workflow.onComplete {

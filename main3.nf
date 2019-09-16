@@ -42,7 +42,7 @@ log.info """\
 
 Channel
     .fromFilePairs( params.reads, checkExists:true )
-    .into { read_pairs_ch; read_pairs2_ch }
+    .set{ read_pairs_ch }
 
 
 process index {
@@ -100,7 +100,7 @@ process multiqc {
     publishDir params.outdir, mode:'copy'
     
     input:
-    path '*' 
+    path 'data*/*' 
     path config 
 
     output:

@@ -100,7 +100,7 @@ process multiqc {
     publishDir params.outdir, mode:'copy'
     
     input:
-    path '*' from quant_ch.mix(fastqc_ch).collect()
+    path 'data*/*' from quant_ch.mix(fastqc_ch).collect()
     path config from params.multiqc
 
     output:

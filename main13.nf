@@ -43,18 +43,6 @@ log.info """\
 
 include './rnaseq-analysis' params(params)
 
-workflow rnaseqForTranscrip1 {
-    rnaseq_analysis ( 
-        params.transcript1, 
-        Channel .fromFilePairs( params.reads, checkExists: true )  )
-}
-
-workflow rnaseqForTranscrip2 {
-    rnaseq_analysis ( 
-        params.transcript2, 
-        Channel .fromFilePairs( params.reads, checkExists: true )  )
-}
-
 
 
 workflow {
@@ -63,13 +51,12 @@ workflow {
            trascript: tuple[0]
            reads: [ tuple[1], tuple[2] ]
          })
-         
-    Channel .fromFilePairs( 'data/ggal/ggal_*_{1,2}.fq' ).set {reads} 
+
+    Channel.fromFilePairs( 'data/ggal/ggal_*_{1,2}.fq' ).set {reads} 
     Channel.fromPath('data/ggal/transcriptome_*.fa') \
         | combine( reads ) \
         | fork(separateTranscriptFromReads) \
         | rnaseq_analysis
-
 
 }
 

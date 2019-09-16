@@ -42,19 +42,19 @@ log.info """\
 include './rnaseq-analysis' params(params)
 
 workflow rnaseqForTranscrip1 {
-    'rnaseq-analysis'( 
+    rnaseq_analysis ( 
         params.transcriptome, 
         Channel .fromFilePairs( params.reads, checkExists: true )  )
 }
 
 workflow rnaseqForTranscrip2 {
-    'rnaseq-analysis'( 
+    rnaseq_analysis ( 
         params.transcriptome, 
         Channel .fromFilePairs( params.reads, checkExists: true )  )
 }
 
 workflow {
-    'rnaseq-analysis'( 
+    rnaseq_analysis ( 
         params.transcriptome, 
         Channel .fromFilePairs( params.reads, checkExists: true )  )
 }
