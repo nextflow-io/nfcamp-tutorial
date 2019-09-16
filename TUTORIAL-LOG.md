@@ -16,7 +16,9 @@
 
     nextflow run main4.nf
 
-## Step 5 - Creation of a module files: rnaseq-processes.nf
+## Step 5 - Creation of a module files: 
+
+   save the process to the file `rnaseq-processes.nf` 
 
 ## Step 6 - Inclusion of module file 
 
@@ -30,8 +32,6 @@
     include multiqc from './rnaseq-processes' params(params)
 
 ## Step 8 - Create a sub-workflow module file named: `rnaseq-analysis.nf` 
-
-
 
     workflow rnaseq_analysis {
         get: 
