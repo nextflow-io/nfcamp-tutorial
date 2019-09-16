@@ -179,9 +179,9 @@ invoke both
 
 ## Step 15 - Use of workflow publish
 
-    * Remove publishDir from processes 
-    * Add emit/out to rnaseq_analysis
-    * Add publish to the main workflow 
+* Remove publishDir from processes 
+* Add emit/out to rnaseq_analysis
+* Add publish to the main workflow 
 
         workflow {
             main:
